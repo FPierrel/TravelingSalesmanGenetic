@@ -1,5 +1,6 @@
 #include <string>
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include <cstdlib>
 
@@ -23,9 +24,19 @@ TravelingSalesman::TravelingSalesman(string filename)
 			distance_matrix[i] = new int[this->size];
 		}
 
+		int idx = 0;		
 		while (getline(file, line))
 		{
-
+			int idy = 0;
+			stringstream stream(line);
+			while (true)
+			{
+				if (!stream)
+					break;
+				stream >> distance_matrix[idx][idy];
+				idy++;
+			}
+			idx++;
 		}
 
 		file.close();
