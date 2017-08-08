@@ -55,6 +55,8 @@ void TravelingSalesman::run(int nb_pop, int nb_keep, int nb_time)
 
 	init_pop();
 	print_pop();
+	sort_pop();
+	print_pop();
 	delete_pop();
 }
 
@@ -80,14 +82,64 @@ void TravelingSalesman::init_pop()
 	}
 }
 
+void TravelingSalesman::sort_pop()
+{
+	int* distances = new int[nb_pop];
+	int** sorted_pop = new int*[nb_pop];
+	for (int i = 0; i < nb_pop; i++)
+		sorted_pop[i] = new int[size + 1];
+	
+	for (int i = 0; i < nb_pop; i++)
+	{
+		distances[i] = eval_ind(population[i]);
+	}
+
+	for (int i = 0; i < nb_pop; i++)
+	{
+		int best_id = -1;
+		int best_value = INT_MAX;
+		
+		for (int j = 0; j < nb_pop; j++)
+		{
+			if (distances[j] < best_value)
+			{
+				best_id = j;
+				best_value = distances[j];
+			}
+		}
+
+		distances[best_id] = INT_MAX;
+		for (int j = 0; j < size + 1; j++)
+		{
+			sorted_pop[i][j] = population[best_id][j];
+		}
+	}
+
+	delete_pop();
+	population = sorted_pop;
+}
+
+int TravelingSalesman::eval_ind(int* ind) {
+	int total = 0;
+
+	for (int i = 0; i < size; i++) 
+	{
+		total += distance_matrix[ind[i]][ind[i + 1]];
+	}
+
+	return total;
+}
+
 void TravelingSalesman::print_pop()
 {
 	cout << "Population: " << endl;
 	for (int i = 0; i < nb_pop; i++)
 	{
 		for (int j = 0; j < size + 1; j++)
+		{
 			cout << population[i][j] << " ";
-		cout << endl;
+		}
+		cout << "distance: " << eval_ind(population[i]) << endl;
 	}
 }
 
