@@ -12,17 +12,21 @@ private:
 	int size;
 
 	//Parameters
-	int nb_pop;
+	int nb_ind;
 	int nb_keep;
 	int nb_time;
-	
+	int crossing_probability;
+	int mutation_probability;
+	int cloning_probability;
+
 	void init_pop();
 	void sort_pop();
 	void delete_pop();
-	int eval_ind(int* ind);
+	void evol_pop();
+	int fitness(int* ind);
 public:
 	TravelingSalesman(string filename);
-	void run(int nb_pop, int nb_keep, int nb_time);
+	void run(int nb_ind, int nb_keep, int nb_time, int crossing_probability, int mutation_probability, int cloning_probability);
 	void print_pop();
 	~TravelingSalesman();
 };

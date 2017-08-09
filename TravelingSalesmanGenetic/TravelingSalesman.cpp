@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <algorithm>
+#include <ctime>
 
 #include "TravelingSalesman.h"
 
@@ -38,7 +39,7 @@ TravelingSalesman::TravelingSalesman(string filename)
 			}
 			idx++;
 		}
-
+		
 		file.close();
 	}
 	else
@@ -47,11 +48,14 @@ TravelingSalesman::TravelingSalesman(string filename)
 	}
 }
 
-void TravelingSalesman::run(int nb_pop, int nb_keep, int nb_time)
+void TravelingSalesman::run(int nb_ind, int nb_keep, int nb_time, int crossing_probability, int mutation_probability, int cloning_probability)
 {
-	this->nb_pop = nb_pop;
+	this->nb_ind = nb_ind;
 	this->nb_keep = nb_keep;
 	this->nb_time = nb_time;
+	this->crossing_probability = crossing_probability;
+	this->mutation_probability = mutation_probability;
+	this->cloning_probability = cloning_probability;
 
 	init_pop();
 	print_pop();
@@ -62,15 +66,15 @@ void TravelingSalesman::run(int nb_pop, int nb_keep, int nb_time)
 
 void TravelingSalesman::init_pop()
 {
-	this->population = new int*[this->nb_pop];
-	for (int i = 0; i < nb_pop; i++)
+	this->population = new int*[this->nb_ind];
+	for (int i = 0; i < nb_ind; i++)
 		this->population[i] = new int[this->size + 1];
 	
-	for (int i = 0; i < nb_pop; i++)
+	for (int i = 0; i < nb_ind; i++)
 		for (int j = 0; j < size + 1; j++)
 			population[i][j] = -1;
 	
-	for (int i = 0; i < nb_pop; i++) 
+	for (int i = 0; i < nb_ind; i++) 
 	{
 		population[i][0] = 0;
 		for (int j = 1; j < size; j++) {
@@ -84,22 +88,22 @@ void TravelingSalesman::init_pop()
 
 void TravelingSalesman::sort_pop()
 {
-	int* distances = new int[nb_pop];
-	int** sorted_pop = new int*[nb_pop];
-	for (int i = 0; i < nb_pop; i++)
+	int* distances = new int[nb_ind];
+	int** sorted_pop = new int*[nb_ind];
+	for (int i = 0; i < nb_ind; i++)
 		sorted_pop[i] = new int[size + 1];
 	
-	for (int i = 0; i < nb_pop; i++)
+	for (int i = 0; i < nb_ind; i++)
 	{
-		distances[i] = eval_ind(population[i]);
+		distances[i] = fitness(population[i]);
 	}
 
-	for (int i = 0; i < nb_pop; i++)
+	for (int i = 0; i < nb_ind; i++)
 	{
 		int best_id = -1;
 		int best_value = INT_MAX;
 		
-		for (int j = 0; j < nb_pop; j++)
+		for (int j = 0; j < nb_ind; j++)
 		{
 			if (distances[j] < best_value)
 			{
@@ -119,7 +123,52 @@ void TravelingSalesman::sort_pop()
 	population = sorted_pop;
 }
 
-int TravelingSalesman::eval_ind(int* ind) {
+void TravelingSalesman::evol_pop() 
+{
+	int** new_pop = new int*[this->nb_ind];
+	for (int i = 0; i < nb_ind; i++)
+		new_pop[i] = new int[this->size + 1];
+
+	srand(time(NULL));
+	for (int idx_new_pop = 0; idx_new_pop < nb_keep; idx_new_pop++)
+	{		
+		if (idx_new_pop < nb_keep)
+		{
+			for (int i = 0; i < size + 1; i++)
+				new_pop[idx_new_pop][i] = population[idx_new_pop][i];
+		}
+		else
+		{
+			int rnd = rand() % 100;
+			if (rnd < crossing_probability)
+			{
+
+			}
+			else if (rnd < crossing_probability + mutation_probability)
+			{
+				int pos_1 = rand() % (size - 1) + 1;
+				int pos_2 = rand() % (size - 1) + 1;
+				while (pos_1 == pos_2)
+					pos_2 = rand() % (size - 1) + 1;
+
+				for (int i = 0; i < size + 1; i++)
+					new_pop[idx_new_pop][i] = population[idx_new_pop][i];
+				new_pop[idx_new_pop][pos_1] = population[idx_new_pop][pos_2];
+				new_pop[idx_new_pop][pos_2] = population[idx_new_pop][pos_1];
+			}
+			else
+			{
+				for (int i = 0; i < size + 1; i++)
+					new_pop[idx_new_pop][i] = population[idx_new_pop][i];
+			}
+		}
+
+	}
+
+}
+
+int TravelingSalesman::fitness(int* ind) 
+{
 	int total = 0;
 
 	for (int i = 0; i < size; i++) 
@@ -133,19 +182,19 @@ int TravelingSalesman::eval_ind(int* ind) {
 void TravelingSalesman::print_pop()
 {
 	cout << "Population: " << endl;
-	for (int i = 0; i < nb_pop; i++)
+	for (int i = 0; i < nb_ind; i++)
 	{
 		for (int j = 0; j < size + 1; j++)
 		{
 			cout << population[i][j] << " ";
 		}
-		cout << "distance: " << eval_ind(population[i]) << endl;
+		cout << "distance: " << fitness(population[i]) << endl;
 	}
 }
 
 void TravelingSalesman::delete_pop()
 {
-	for (int i = 0; i < nb_pop; i++)
+	for (int i = 0; i < nb_ind; i++)
 		delete[] population[i];
 
 	delete[] population;
