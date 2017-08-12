@@ -19,6 +19,7 @@ private:
 	int mutation_probability;
 	int cloning_probability;
 
+	int* cross(int p1, int p2);
 	void init_pop();
 	void sort_pop();
 	void delete_pop();

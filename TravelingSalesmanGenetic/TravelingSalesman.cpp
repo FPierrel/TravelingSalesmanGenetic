@@ -58,9 +58,16 @@ void TravelingSalesman::run(int nb_ind, int nb_keep, int nb_time, int crossing_p
 	this->cloning_probability = cloning_probability;
 
 	init_pop();
-	print_pop();
 	sort_pop();
-	print_pop();
+	for (int i = 1; i <= nb_time; i++)
+	{
+		evol_pop();
+		sort_pop;
+		cout << "Generation n° " + i << endl;
+		cout << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯" << endl;
+		print_pop();		
+	}
+
 	delete_pop();
 }
 
@@ -140,9 +147,30 @@ void TravelingSalesman::evol_pop()
 		else
 		{
 			int rnd = rand() % 100;
+
 			if (rnd < crossing_probability)
 			{
+				int p1 = rand() % 100;
+				if (p1<50)
+					p1 = rand() % (int)(0.2*nb_ind);
+				else if (p1>80)
+					p1 = rand() % (int)(0.3*nb_ind) + 0.7*nb_ind;
+				else
+					p1 = rand() % (int)(0.5*nb_ind) + 0.2*nb_ind;
 
+				int p2 = rand() % 100;
+				if (p2<50)
+					p2 = rand() % (int)(0.2*nb_ind);
+				else if (p2>80)
+					p2 = rand() % (int)(0.3*nb_ind) + 0.7*nb_ind;
+				else
+					p2 = rand() % (int)(0.5*nb_ind) + 0.2*nb_ind;
+
+				int* new_ind = cross(p1, p2);
+				for (int i = 0; i < size + 1; i++)
+					new_pop[idx_new_pop][i] = new_ind[i];
+
+				delete[] new_ind;
 			}
 			else if (rnd < crossing_probability + mutation_probability)
 			{
@@ -162,9 +190,39 @@ void TravelingSalesman::evol_pop()
 					new_pop[idx_new_pop][i] = population[idx_new_pop][i];
 			}
 		}
+	}
+}
 
+int* TravelingSalesman::cross(int p1, int p2)
+{
+	int* ind = new int[size + 1];
+	bool* already_copied = new bool[size + 1];
+	for (int i = 0; i < size + 1; i++) 
+	{
+		already_copied = false;
 	}
 
+	int pos = rand() % (size - 1) + 1;
+
+	for (int i = 0; i < pos; i++) 
+	{
+		ind[i] = population[p1][i];
+		already_copied[ind[i]] = true;
+	}
+
+	for (int i = 0; i < size; i++) 
+	{
+		if (!already_copied[population[p2][i]]) 
+		{
+			ind[pos] = population[p2][i];
+			pos++;
+		}
+	}
+
+	ind[size] = 0;	
+	delete[] already_copied;
+
+	return ind;
 }
 
 int TravelingSalesman::fitness(int* ind) 
