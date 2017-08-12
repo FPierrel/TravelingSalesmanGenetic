@@ -7,14 +7,20 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	if (argc != 2)
+	TravelingSalesman *travelingSalesman;
+	if (argc == 2)
 	{
-		cout << "usage: " << argv[0] << " filename" << endl;
-		return -1;
+		travelingSalesman = new TravelingSalesman(argv[1]);		
+	}
+	else
+	{
+		travelingSalesman = new TravelingSalesman(500);
 	}
 
-	TravelingSalesman travelingSalesman(argv[1]);
-	travelingSalesman.run(100, 5, 100, 80, 15, 5);
+	travelingSalesman->run(1000, 5, 10000, 80, 15, 5);
+
+	delete travelingSalesman;
+
 	system("PAUSE");
 	exit(0);
 }

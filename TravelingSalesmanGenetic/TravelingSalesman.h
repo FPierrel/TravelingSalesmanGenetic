@@ -25,10 +25,12 @@ private:
 	void delete_pop();
 	void evol_pop();
 	int fitness(int* ind);
+	void print_best();
+	void print_pop();
 public:
 	TravelingSalesman(string filename);
-	void run(int nb_ind, int nb_keep, int nb_time, int crossing_probability, int mutation_probability, int cloning_probability);
-	void print_pop();
+	TravelingSalesman(int size);
+	void run(int nb_ind, int nb_keep, int nb_time, int crossing_probability, int mutation_probability, int cloning_probability);	
 	~TravelingSalesman();
 };
 
