@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
 	}
 
 	TravelingSalesman travelingSalesman(argv[1]);
-	travelingSalesman.run(4, 2, 2, 80, 15, 5);
+	travelingSalesman.run(100, 5, 100, 80, 15, 5);
+	system("PAUSE");
 	exit(0);
 }

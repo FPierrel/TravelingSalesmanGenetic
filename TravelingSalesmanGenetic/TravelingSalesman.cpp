@@ -62,8 +62,8 @@ void TravelingSalesman::run(int nb_ind, int nb_keep, int nb_time, int crossing_p
 	for (int i = 1; i <= nb_time; i++)
 	{
 		evol_pop();
-		sort_pop;
-		cout << "Generation n° " + i << endl;
+		sort_pop();
+		cout << "Generation numero " + i << endl;
 		cout << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯" << endl;
 		print_pop();		
 	}
@@ -137,9 +137,9 @@ void TravelingSalesman::evol_pop()
 		new_pop[i] = new int[this->size + 1];
 
 	srand(time(NULL));
-	for (int idx_new_pop = 0; idx_new_pop < nb_keep; idx_new_pop++)
+	for (int idx_new_pop = 0; idx_new_pop < nb_ind; idx_new_pop++)
 	{		
-		if (idx_new_pop < nb_keep)
+		if (idx_new_pop <= nb_keep)
 		{
 			for (int i = 0; i < size + 1; i++)
 				new_pop[idx_new_pop][i] = population[idx_new_pop][i];
@@ -191,6 +191,9 @@ void TravelingSalesman::evol_pop()
 			}
 		}
 	}
+
+	delete_pop();
+	population = new_pop;	
 }
 
 int* TravelingSalesman::cross(int p1, int p2)
@@ -199,7 +202,7 @@ int* TravelingSalesman::cross(int p1, int p2)
 	bool* already_copied = new bool[size + 1];
 	for (int i = 0; i < size + 1; i++) 
 	{
-		already_copied = false;
+		already_copied[i] = false;
 	}
 
 	int pos = rand() % (size - 1) + 1;
